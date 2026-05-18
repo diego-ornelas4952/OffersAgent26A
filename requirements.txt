@@ -1,5 +1,0 @@
-browser-use
-playwright
-langchain-google-genai
-python-dotenv
-pydantic

@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Cazador de Ofertas",
+  "version": "1.0",
+  "description": "Encuentra la mejor oferta usando el algoritmo TOPSIS.",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "permissions": ["storage"]
+}
