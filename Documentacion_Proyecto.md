@@ -2,18 +2,18 @@
 
 ## Plataforma y Tecnologías Utilizadas
 
-El proyecto del **Cazador de Ofertas** está construido sobre una arquitectura moderna basada en la separación del cliente y el servidor (Frontend y Backend), utilizando las siguientes herramientas:
+Nuestro proyecto del Cazador de Ofertas está construido sobre una arquitectura moderna basada en la separación del cliente y el servidor (Frontend y Backend), utilizando las siguientes herramientas:
 
 ### Frontend
-- **Librería Principal:** React.js
-- **Estilos:** Tailwind CSS (evidente en el uso de clases utilitarias directas en los componentes, como en `App.jsx`).
+- React.js
+- Tailwind CSS
 
 ### Backend
-- **Lenguaje:** Python 3.
-- **Framework Web:** FastAPI (para un rápido despliegue y ejecución de APIs) 
-- **Servidor:** Uvicorn 
-- **Análisis y Procesamiento Numérico:** Pandas y NumPy (para la manipulación y análisis de datos obtenidos)
-- **Scraping:** Procesos de recolección de información que se ejecutan en paralelo contra tiendas populares como Amazon o MercadoLibre.
+- Python 3.
+- FastAPI (para un rápido despliegue y ejecución de APIs) 
+- Uvicorn 
+- Procesamiento Numérico: Pandas y NumPy (para la manipulación y análisis de datos obtenidos)
+- Scraping: Procesos de recolección de información que se ejecutan en paralelo contra tiendas populares como Amazon o MercadoLibre.
 
 ---
 
@@ -28,8 +28,8 @@ Para poner en marcha de manera local tanto el ambiente de desarrollo como los se
 - Navegador Web moderno (Google Chrome, Mozilla Firefox, Safari o Brave).
 
 ### Requisitos de Hardware
-- **Procesador:** CPU Dual-Core o superior (necesario por el multi-threading/asyncio en los procesos de web scraping).
-- **Memoria RAM:** Mínimo 4 GB (Recomendado 8 GB, ya que la manipulación de dataframes de Pandas y la posible apertura de instancias de navegadores en background, vía Selenium o Playwright, requieren memoria significativa).
+- **Procesador:** CPU Dual-Core o superior
+- **Memoria RAM:** Mínimo 4 GB (Recomendado 8 GB)
 - **Almacenamiento:** Alrededor de 1 GB de espacio libre para alojar las carpetas generadas de dependencias (`node_modules` y `venv`).
 - **Conectividad:** Conexión a Internet activa y estable, obligatoria para que el backend pueda acceder y minar los datos de las tiendas online.
 
