@@ -53,8 +53,10 @@ async def scrape_mercadolibre(browser, query: str) -> List[Dict[str, Any]]:
         items = await page.query_selector_all(".ui-search-layout__item, .poly-card, [data-testid='search-item']")
         print(f"ML: Encontrados {len(items)} items.")
         
+        seen_identifiers = set()
         # Extraer datos producto
-        for item in items[:6]:
+        for item in items:
+            if len(products) >= 8: break
             try:
                 title_elem = await item.query_selector("h2, .ui-search-item__title, .poly-component__title")
                 name = await title_elem.inner_text()
@@ -69,12 +71,16 @@ async def scrape_mercadolibre(browser, query: str) -> List[Dict[str, Any]]:
                 if not price_elem: continue
                 price = float((await price_elem.inner_text()).replace(',', ''))
                 
+                identifier = f"{name.strip().lower()}_{price}"
+                if identifier in seen_identifiers: continue
+                
                 full_text = (await item.inner_text()).lower()
                 delivery_days = 1 if any(x in full_text for x in ["mañana", "hoy", "full"]) else 3
                 
                 relevance = calculate_relevance(query, name)
                 if relevance < 0.15: continue
-
+                
+                seen_identifiers.add(identifier)
                 products.append({
                     "store": "Mercado Libre", "name": name.strip(), "price": price,
                     "delivery_days": delivery_days, "reputation": 4.8 if "mercado" in full_text else 4.2,
@@ -109,8 +115,10 @@ async def scrape_amazon(browser, query: str) -> List[Dict[str, Any]]:
             return []
 
         items = await page.query_selector_all(".s-result-item[data-component-type='s-search-result']")
+        seen_identifiers = set()
         # Extraer datos producto
-        for item in items[:6]:
+        for item in items:
+            if len(products) >= 8: break
             try:
                 name_elem = await item.query_selector("h2 span, h2")
                 name = await name_elem.inner_text()
@@ -129,12 +137,16 @@ async def scrape_amazon(browser, query: str) -> List[Dict[str, Any]]:
                 if not price_elem: continue
                 price = float((await price_elem.inner_text()).replace(',', '').replace('.', '').strip())
                 
+                identifier = f"{name.strip().lower()}_{price}"
+                if identifier in seen_identifiers: continue
+                
                 full_text = (await item.inner_text()).lower()
                 delivery_days = 1 if any(x in full_text for x in ["mañana", "hoy"]) else 2
                 
                 relevance = calculate_relevance(query, name)
                 if relevance < 0.15: continue
-
+                
+                seen_identifiers.add(identifier)
                 products.append({
                     "store": "Amazon", "name": name.strip(), "price": price,
                     "delivery_days": delivery_days, "reputation": 4.5,
@@ -158,20 +170,7 @@ async def scrape_all(query: str) -> List[Dict[str, Any]]:
         ml_products = results[0] if results[0] else []
         amazon_products = results[1] if results[1] else []
         
-        final_products = []
-        ml_count = len(ml_products)
-        amazon_count = len(amazon_products)
-        
-        if ml_count >= 2 and amazon_count >= 2:
-            final_products.extend(ml_products[:2])
-            final_products.extend(amazon_products[:2])
-        elif ml_count < 2:
-            final_products.extend(ml_products)
-            needed = 4 - len(final_products)
-            final_products.extend(amazon_products[:needed])
-        elif amazon_count < 2:
-            final_products.extend(amazon_products)
-            needed = 4 - len(final_products)
-            final_products.extend(ml_products[:needed])
+        # Combinar todos los productos y limitar a 16
+        final_products = ml_products + amazon_products
             
-        return final_products
+        return final_products[:16]
