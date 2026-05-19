@@ -12,6 +12,7 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
+  // Maneja cambios en sliders
   const handleWeightChange = (e) => {
     const { name, value } = e.target
     const newValue = parseFloat(value) / 100
@@ -24,6 +25,7 @@ function App() {
   const totalWeight = Object.values(weights).reduce((a, b) => a + b, 0)
   const isValidWeights = Math.abs(totalWeight - 1.0) < 0.001
 
+  // Ejecuta la búsqueda
   const handleSearch = async (e) => {
     e.preventDefault()
     if (!isValidWeights) {
@@ -52,7 +54,7 @@ function App() {
       }
 
       const data = await response.json()
-      // Sort results by rank before setting state
+      // Ordenar por ranking
       const sortedData = data.sort((a, b) => a.rank - b.rank);
       setResults(sortedData)
     } catch (err) {
@@ -66,6 +68,7 @@ function App() {
     }
   }
 
+  // Abre link externo
   const openInNewTab = (url) => {
     if (!url) {
       console.error("URL no disponible para este producto");

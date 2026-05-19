@@ -10,6 +10,7 @@ USER_AGENTS = [
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
 ]
 
+# Calcula coincidencia de texto
 def calculate_relevance(query: str, title: str) -> float:
     query_words = set(re.findall(r'\w+', query.lower()))
     title_words = set(re.findall(r'\w+', title.lower()))
@@ -17,12 +18,14 @@ def calculate_relevance(query: str, title: str) -> float:
     matches = len(query_words.intersection(title_words))
     return matches / len(query_words)
 
+# Simula usuario humano
 async def human_scroll(page):
     """Simulates a human-like scroll to trigger lazy-loaded content and bypass bot detection."""
     for _ in range(3):
         await page.mouse.wheel(0, random.randint(300, 600))
         await asyncio.sleep(random.uniform(0.5, 1.2))
 
+# Scraping Mercado Libre
 async def scrape_mercadolibre(browser, query: str) -> List[Dict[str, Any]]:
     context = await browser.new_context(user_agent=random.choice(USER_AGENTS))
     page = await context.new_page()
@@ -32,10 +35,8 @@ async def scrape_mercadolibre(browser, query: str) -> List[Dict[str, Any]]:
         print(f"ML: Accediendo a {url}...")
         await page.goto(url, wait_until="domcontentloaded", timeout=45000)
         
-        # Human behavior
         await human_scroll(page)
         
-        # Super robust selector search
         selectors = [".ui-search-layout__item", ".poly-card", ".ui-search-result__wrapper", "[data-testid='search-item']"]
         found = False
         for sel in selectors:
@@ -47,13 +48,12 @@ async def scrape_mercadolibre(browser, query: str) -> List[Dict[str, Any]]:
         
         if not found:
             print(f"ML: Bloqueo detectado o página vacía para {query}")
-            # Try taking a screenshot for debugging (optional in dev)
-            # await page.screenshot(path="ml_debug.png")
             return []
 
         items = await page.query_selector_all(".ui-search-layout__item, .poly-card, [data-testid='search-item']")
         print(f"ML: Encontrados {len(items)} items.")
         
+        # Extraer datos producto
         for item in items[:6]:
             try:
                 title_elem = await item.query_selector("h2, .ui-search-item__title, .poly-component__title")
@@ -87,6 +87,7 @@ async def scrape_mercadolibre(browser, query: str) -> List[Dict[str, Any]]:
         await context.close()
     return products
 
+# Scraping Amazon
 async def scrape_amazon(browser, query: str) -> List[Dict[str, Any]]:
     context = await browser.new_context(user_agent=random.choice(USER_AGENTS))
     page = await context.new_page()
@@ -108,6 +109,7 @@ async def scrape_amazon(browser, query: str) -> List[Dict[str, Any]]:
             return []
 
         items = await page.query_selector_all(".s-result-item[data-component-type='s-search-result']")
+        # Extraer datos producto
         for item in items[:6]:
             try:
                 name_elem = await item.query_selector("h2 span, h2")
@@ -117,7 +119,6 @@ async def scrape_amazon(browser, query: str) -> List[Dict[str, Any]]:
                 if not url_elem: continue
                 href = await url_elem.get_attribute("href")
                 
-                # Intentar limpiar la URL (evita que adblockers como Brave bloqueen el link)
                 asin_match = re.search(r'/dp/([A-Z0-9]{10})', href)
                 if asin_match:
                     product_url = f"https://www.amazon.com.mx/dp/{asin_match.group(1)}"
@@ -146,9 +147,9 @@ async def scrape_amazon(browser, query: str) -> List[Dict[str, Any]]:
         await context.close()
     return products
 
+# Ejecuta ambos scrapers
 async def scrape_all(query: str) -> List[Dict[str, Any]]:
     async with async_playwright() as p:
-        # We launch with a bit of "noise" to be less detectable
         browser = await p.chromium.launch(headless=True, args=["--disable-blink-features=AutomationControlled"])
         tasks = [scrape_mercadolibre(browser, query), scrape_amazon(browser, query)]
         results = await asyncio.gather(*tasks)
