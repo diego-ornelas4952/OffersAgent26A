@@ -80,9 +80,8 @@ function App() {
     <div className="min-h-screen bg-white text-gray-900 font-sans p-6 max-w-2xl mx-auto">
       <header className="mb-8 text-center">
         <h1 className="text-3xl font-light tracking-tight text-gray-800">
-          Cazador de <span className="font-semibold">Ofertas</span>
+          Cazador de Ofertas
         </h1>
-        <p className="text-gray-500 text-sm mt-2">Ranking inteligente con TOPSIS</p>
       </header>
 
       <form onSubmit={handleSearch} className="space-y-6">
@@ -102,7 +101,7 @@ function App() {
             <h2 className="text-sm font-medium text-gray-700">Prioridades (Total: {(totalWeight * 100).toFixed(0)}%)</h2>
             {!isValidWeights && <span className="text-xs text-red-500">Debe sumar 100%</span>}
           </div>
-          
+
           {[
             { id: 'price', label: 'Precio', value: weights.price },
             { id: 'delivery', label: 'Velocidad de Entrega', value: weights.delivery },
@@ -160,18 +159,16 @@ function App() {
             {results.map((item, index) => (
               <div
                 key={index}
-                className={`p-5 border rounded-xl transition-all shadow-sm hover:shadow-md ${
-                  item.rank === 1 
-                    ? 'border-emerald-200 bg-emerald-50/40 ring-1 ring-emerald-100' 
-                    : 'border-gray-100 bg-white'
-                }`}
+                className={`p-5 border rounded-xl transition-all shadow-sm hover:shadow-md ${item.rank === 1
+                  ? 'border-emerald-200 bg-emerald-50/40 ring-1 ring-emerald-100'
+                  : 'border-gray-100 bg-white'
+                  }`}
               >
                 <div className="flex justify-between items-start">
                   <div className="flex-1 pr-4">
                     <div className="flex items-center gap-2 mb-1.5">
-                      <span className={`text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded ${
-                        item.store === 'Amazon' ? 'bg-orange-100 text-orange-700' : 'bg-yellow-100 text-yellow-700'
-                      }`}>
+                      <span className={`text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded ${item.store === 'Amazon' ? 'bg-orange-100 text-orange-700' : 'bg-yellow-100 text-yellow-700'
+                        }`}>
                         {item.store}
                       </span>
                       {item.rank === 1 && (
@@ -185,15 +182,14 @@ function App() {
                   <div className="text-right">
                     <p className="text-xl font-bold text-gray-900">${item.price.toLocaleString()}</p>
                     <div className="inline-block mt-1">
-                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                         item.topsis_score > 0.7 ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'
-                       }`}>
-                         Score: {(item.topsis_score * 100).toFixed(1)}
-                       </span>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${item.topsis_score > 0.7 ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'
+                        }`}>
+                        Score: {(item.topsis_score * 100).toFixed(1)}
+                      </span>
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="mt-5 grid grid-cols-4 gap-2 text-center border-t border-gray-50 pt-4 items-center">
                   <div>
                     <p className="text-[9px] text-gray-400 uppercase font-semibold">Envío</p>
